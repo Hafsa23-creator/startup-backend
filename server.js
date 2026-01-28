@@ -65,6 +65,7 @@ app.use("/api/partnerships", partnershipRoutes);
 app.use("/api/reviews", reviewRoutes);
 
 // Start server
+console.log("Trying to listen on port:", process.env.PORT || 5000);
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
