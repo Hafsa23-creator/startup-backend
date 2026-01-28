@@ -15,7 +15,7 @@ dotenv.config();
 
 const app = express();
 
-// 1. حل CORS يدوي + قوي (يحل مشكل redirect/pre-flight على Render)
+// حل CORS يدوي + قوي جدًا (يحل مشكل redirect/pre-flight على Render)
 app.use((req, res, next) => {
   const origin = req.headers.origin;
 
@@ -23,7 +23,7 @@ app.use((req, res, next) => {
   const allowedOrigins = [
     'http://localhost:3000',
     'http://localhost:3001',
-    'https://your-app-name.netlify.app' // غيريه لاحقًا برابط Netlify الحقيقي
+    // 'https://your-netlify-app.netlify.app' // أضيفيه لاحقًا
   ];
 
   // نرد الـ header لكل الطلبات
@@ -40,19 +40,19 @@ app.use((req, res, next) => {
   next();
 });
 
-// 2. باقي الـ middlewares
+// باقي الـ middlewares
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
-// 3. MongoDB connection (من Environment Variable في Render)
+// MongoDB connection
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB Atlas connected ✅"))
   .catch(err => {
     console.error("MongoDB connection error:", err.message);
-    process.exit(1); // يوقف السيرفر إذا فشل الاتصال (Render يعيد المحاولة)
+    process.exit(1); // يوقف السيرفر إذا فشل الاتصال
   });
 
-// Health Check (مهم لـ Render يعرف السيرفر شغال)
+// Health Check (مهم لـ Render)
 app.get("/healthz", (req, res) => res.status(200).send("OK"));
 
 // Routes
