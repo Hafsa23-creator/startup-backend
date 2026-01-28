@@ -1,7 +1,7 @@
-// routes/auth.js
 import express from "express";
 import User from "../models/user.js";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken"; // ← زدنا jsonwebtoken
 
 const router = express.Router();
 
@@ -65,10 +65,19 @@ router.post("/register", async (req, res) => {
     const user = new User(userData);
     await user.save();
 
+    // إنشاء JWT token بعد التسجيل
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET || "your-secret-key", // زدي JWT_SECRET في .env أو Render Env
+      { expiresIn: "7d" }
+    );
+
     res.status(201).json({
+      token,
       user: {
         id: user._id,
         fullname: user.fullname,
+        email: user.email,
         role: user.role,
       },
     });
@@ -93,21 +102,29 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ msg: "كلمة المرور خاطئة" });
     }
 
-    // هنا المهم: نرجع كل البيانات الحقيقية
-    const userData = {
-      id: user._id,
-      fullname: user.fullname,
-      email: user.email,
-      role: user.role,
-      expertise: user.expertise || "",
-      experienceYears: user.experienceYears || "",
-      preferredSectors: user.preferredSectors || [],
-    };
+    // إنشاء JWT token بعد الدخول
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET || "your-secret-key",
+      { expiresIn: "7d" }
+    );
 
-    res.json({ user: userData });
+    res.json({
+      token,
+      user: {
+        id: user._id,
+        fullname: user.fullname,
+        email: user.email,
+        role: user.role,
+        expertise: user.expertise || "",
+        experienceYears: user.experienceYears || "",
+        preferredSectors: user.preferredSectors || [],
+      },
+    });
   } catch (err) {
-    console.error(err);
+    console.error("خطأ في الدخول:", err);
     res.status(500).json({ msg: "خطأ في السيرفر" });
   }
 });
+
 export default router;

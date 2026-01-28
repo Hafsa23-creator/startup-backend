@@ -1,15 +1,14 @@
-// routes/users.js
 import express from "express";
 import User from "../models/user.js";
 import Project from "../models/Project.js";
-import multer from "multer"; // ← مهم جدًا
+import multer from "multer";
 
 const router = express.Router();
 
-// إعداد multer لرفع الـ CV
+// multer setup (نفس اللي عندك، لكن زدنا error handling)
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/"); // يحفظ في مجلد uploads اللي عملتيه يدويًا
+    cb(null, "uploads/"); // تأكدي المجلد موجود
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1E9);
@@ -19,7 +18,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
   fileFilter: (req, file, cb) => {
     if (file.mimetype === "application/pdf") {
       cb(null, true);
@@ -29,43 +28,40 @@ const upload = multer({
   },
 });
 
-// رفع السيرة الذاتية
+// رفع CV (مع log أكثر)
 router.post("/upload-cv/:id", upload.single("cv"), async (req, res) => {
   console.log("=== بداية رفع CV ===");
-  console.log("ID المستخدم:", req.params.id);
-  console.log("الملف المرفوع:", req.file);
+  console.log("ID:", req.params.id);
+  console.log("File:", req.file);
   console.log("Body:", req.body);
 
   try {
     if (!req.file) {
-      console.log("لا ملف مرفوع أو غير PDF");
       return res.status(400).json({ msg: "لا ملف مرفوع أو غير PDF" });
     }
 
     const cvUrl = `/uploads/${req.file.filename}`;
-    console.log("الرابط اللي حيحفظ:", cvUrl);
-
     const updated = await User.findByIdAndUpdate(
       req.params.id,
       { cvUrl },
       { new: true }
     );
 
-    console.log("تم التحديث؟", updated ? "نعم" : "لا");
+    if (!updated) {
+      return res.status(404).json({ msg: "المستخدم غير موجود" });
+    }
 
-    res.json({ msg: "تم رفع السيرة الذاتية بنجاح! 🎉", cvUrl });
+    res.json({ msg: "تم رفع السيرة الذاتية بنجاح!", cvUrl });
   } catch (err) {
-    console.error("خطأ في رفع الـ CV:", err.message);
-    console.error(err.stack);
+    console.error("خطأ رفع CV:", err);
     res.status(500).json({ msg: "خطأ في السيرفر" });
   }
 });
 
-// تحديث الوصف الاحترافي
+// تحديث الوصف
 router.patch("/:id", async (req, res) => {
   try {
     const { profileDescription } = req.body;
-
     const updated = await User.findByIdAndUpdate(
       req.params.id,
       { profileDescription },
@@ -76,14 +72,14 @@ router.patch("/:id", async (req, res) => {
       return res.status(404).json({ msg: "المستخدم غير موجود" });
     }
 
-    res.json({ msg: "تم حفظ الوصف الاحترافي بنجاح!" });
+    res.json({ msg: "تم حفظ الوصف بنجاح!" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: "خطأ في السيرفر" });
   }
 });
 
-// جلب الطلاب والخريجين
+// جلب الطلاب
 router.get("/students", async (req, res) => {
   try {
     const students = await User.find({ role: "student" })
@@ -100,11 +96,12 @@ router.get("/students", async (req, res) => {
 
     res.json(studentsWithCount);
   } catch (err) {
-    console.error(err);
+    console.error("خطأ جلب الطلاب:", err);
     res.status(500).json({ msg: "خطأ في السيرفر" });
   }
 });
-// جلب كل الخبراء الاقتصاديين
+
+// جلب الخبراء
 router.get("/experts", async (req, res) => {
   try {
     const experts = await User.find({ role: "expert" })
@@ -112,8 +109,9 @@ router.get("/experts", async (req, res) => {
 
     res.json(experts);
   } catch (err) {
-    console.error("خطأ في جلب الخبراء:", err);
+    console.error("خطأ جلب الخبراء:", err);
     res.status(500).json({ msg: "خطأ في السيرفر" });
   }
 });
+
 export default router;
