@@ -14,21 +14,24 @@ dotenv.config();
 
 const app = express();
 
-// CORS حل نهائي (اللي يخدم على Render + Netlify + localhost)
+// CORS حل نهائي قوي جدًا (يشتغل على Render حتى لو في redirect)
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*'); // نسمح للكل في التجربة
+  // نسمح للكل في التجربة (Netlify + localhost)
+  res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.header('Access-Control-Allow-Credentials', 'true');
 
+  // مهم جدًا: نرد على OPTIONS فورًا قبل أي حاجة
   if (req.method === 'OPTIONS') {
-    res.sendStatus(204); // رد فوري بدون مشكل
+    res.sendStatus(204);
     return;
   }
 
   next();
 });
 
+// باقي الـ middlewares
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
@@ -40,7 +43,7 @@ mongoose.connect(process.env.MONGO_URI)
     process.exit(1);
   });
 
-// Health Check
+// Health Check (للتأكد)
 app.get("/healthz", (req, res) => res.status(200).send("OK"));
 
 // Routes
