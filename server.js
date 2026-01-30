@@ -16,6 +16,7 @@ dotenv.config();
 const app = express();
 
 // حل CORS نهائي وآمن لـ Render + Netlify (يمنع مشكل redirect/pre-flight)
+// حل CORS نهائي وآمن لـ Render + localhost + Netlify
 app.use((req, res, next) => {
   // نسمح لكل المواقع في التجربة (بعدين نقدرو نحددو)
   res.header('Access-Control-Allow-Origin', '*');
@@ -23,7 +24,7 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.header('Access-Control-Allow-Credentials', 'true');
 
-  // رد فوري على OPTIONS (preflight) بدون أي redirect
+  // رد فوري على OPTIONS (preflight) بدون أي مشكل
   if (req.method === 'OPTIONS') {
     res.sendStatus(204);
     return;
