@@ -14,16 +14,14 @@ dotenv.config();
 
 const app = express();
 
-// CORS حل نهائي قوي جدًا (يشتغل على Render حتى لو في redirect)
+// CORS (هذا اللي يخدم في Vercel)
 app.use((req, res, next) => {
-  // نسمح للكل في التجربة (Netlify + localhost)
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.header("Access-Control-Allow-Credentials", "true");
 
-  // مهم جدًا: نرد على OPTIONS فورًا قبل أي حاجة
-  if (req.method === 'OPTIONS') {
+  if (req.method === "OPTIONS") {
     res.sendStatus(204);
     return;
   }
@@ -31,19 +29,18 @@ app.use((req, res, next) => {
   next();
 });
 
-// باقي الـ middlewares
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
-// MongoDB connection
+// MongoDB
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB Atlas connected ✅"))
   .catch(err => {
     console.error("MongoDB connection error:", err.message);
-    process.exit(1);
+    // ما نستعملش process.exit في Vercel (يقتل الوظيفة)
   });
 
-// Health Check (للتأكد)
+// Health Check
 app.get("/healthz", (req, res) => res.status(200).send("OK"));
 
 // Routes
@@ -55,8 +52,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/partnerships", partnershipRoutes);
 app.use("/api/reviews", reviewRoutes);
 
-// Start server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// مهم جدًا: ما نستعملش app.listen في Vercel
+// فقط نصدر الـ app
+
+export default app;
