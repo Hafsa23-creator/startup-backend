@@ -66,30 +66,47 @@ router.get("/partner", async (req, res) => {
 });
 
 // جلب الطلبات الواردة للخبير (pending)
+// جلب الطلبات الواردة للخبير (pending)
 router.get("/expert/pending", async (req, res) => {
   try {
-    const expertId = req.query.expertId;
+    const expertIdStr = req.query.expertId;
 
-    if (!expertId || !mongoose.Types.ObjectId.isValid(expertId)) {
-      return res.status(400).json({ msg: "expertId مطلوب وصالح" });
+    if (!expertIdStr) {
+      return res.status(400).json({ msg: "expertId مطلوب" });
+    }
+
+    let expertId;
+    try {
+      expertId = new mongoose.Types.ObjectId(expertIdStr);
+    } catch (err) {
+      console.error("expertId غير صالح:", err);
+      return res.status(400).json({ msg: "معرف الخبير غير صالح" });
     }
 
     const requests = await Review.find({
-      expertId,
+      expertId: expertId,
       status: "pending"
     })
       .populate("projectId", "name description fundingNeeds sector region")
       .populate("partnerId", "fullname companyName")
-      .populate("studentId", "fullname email")
-      .sort({ createdAt: -1 });
+      .populate("studentId", "fullname email") // ← تأكدي إنه موجود
+      .sort({ createdAt: -1 })
+      .lean(); // lean عشان يخفف الأخطاء ويرجع objects عادية
 
-    res.json(requests);
+    // لو ما فيش طلبات، نرجع مصفوفة فارغة بدل null
+    res.json(requests || []);
   } catch (err) {
-    console.error("خطأ في جلب الطلبات الواردة للخبير:", err);
-    res.status(500).json({ msg: "خطأ في السيرفر" });
+    console.error("خطأ كبير في /expert/pending:", {
+      message: err.message,
+      stack: err.stack,
+      expertId: req.query.expertId
+    });
+    res.status(500).json({ 
+      msg: "خطأ داخلي في السيرفر", 
+      error: err.message 
+    });
   }
 });
-
 // جلب المعاينات المكتملة للخبير
 router.get("/expert/completed", async (req, res) => {
   try {
