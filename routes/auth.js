@@ -97,12 +97,12 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ msg: "الإيميل غير موجود" });
     }
 
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) {
+    // مقارنة عادية بدون bcrypt
+    if (user.password !== password) {
       return res.status(400).json({ msg: "كلمة المرور خاطئة" });
     }
 
-    // إنشاء JWT token بعد الدخول
+    // إنشاء JWT token (خليه زي ما هو)
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET || "your-secret-key",
@@ -116,9 +116,6 @@ router.post("/login", async (req, res) => {
         fullname: user.fullname,
         email: user.email,
         role: user.role,
-        expertise: user.expertise || "",
-        experienceYears: user.experienceYears || "",
-        preferredSectors: user.preferredSectors || [],
       },
     });
   } catch (err) {
