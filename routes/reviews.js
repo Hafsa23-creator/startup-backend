@@ -87,13 +87,24 @@ router.get("/expert/pending", async (req, res) => {
       expertId: expertId,
       status: "pending"
     })
-      .populate("projectId", "name description fundingNeeds sector region")
-      .populate("partnerId", "fullname companyName")
-      .populate("studentId", "fullname email") // ← تأكدي إنه موجود
+      .populate({
+        path: "projectId",
+        select: "name description fundingNeeds sector region",
+        strictPopulate: false // ← مهم: يتجاهل إذا الحقل مش موجود
+      })
+      .populate({
+        path: "partnerId",
+        select: "fullname companyName",
+        strictPopulate: false
+      })
+      .populate({
+        path: "studentId",
+        select: "fullname email",
+        strictPopulate: false
+      })
       .sort({ createdAt: -1 })
-      .lean(); // lean عشان يخفف الأخطاء ويرجع objects عادية
+      .lean(); // lean يخفف الأخطاء ويرجع plain objects
 
-    // لو ما فيش طلبات، نرجع مصفوفة فارغة بدل null
     res.json(requests || []);
   } catch (err) {
     console.error("خطأ كبير في /expert/pending:", {
