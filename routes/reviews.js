@@ -65,59 +65,31 @@ router.get("/partner", async (req, res) => {
   }
 });
 
-// جلب الطلبات الواردة للخبير (pending)
-// جلب الطلبات الواردة للخبير (pending)
+// جلب الطلبات الواردة للخبير (pending) – النسخة الأصلية بدون تعديلات إضافية
 router.get("/expert/pending", async (req, res) => {
   try {
-    const expertIdStr = req.query.expertId;
+    const expertId = req.query.expertId;
 
-    if (!expertIdStr) {
-      return res.status(400).json({ msg: "expertId مطلوب" });
-    }
-
-    let expertId;
-    try {
-      expertId = new mongoose.Types.ObjectId(expertIdStr);
-    } catch (err) {
-      console.error("expertId غير صالح:", err);
-      return res.status(400).json({ msg: "معرف الخبير غير صالح" });
+    if (!expertId || !mongoose.Types.ObjectId.isValid(expertId)) {
+      return res.status(400).json({ msg: "expertId مطلوب وصالح" });
     }
 
     const requests = await Review.find({
-      expertId: expertId,
+      expertId,
       status: "pending"
     })
-      .populate({
-        path: "projectId",
-        select: "name description fundingNeeds sector region",
-        strictPopulate: false // ← مهم: يتجاهل إذا الحقل مش موجود
-      })
-      .populate({
-        path: "partnerId",
-        select: "fullname companyName",
-        strictPopulate: false
-      })
-      .populate({
-        path: "studentId",
-        select: "fullname email",
-        strictPopulate: false
-      })
-      .sort({ createdAt: -1 })
-      .lean(); // lean يخفف الأخطاء ويرجع plain objects
+      .populate("projectId", "name description fundingNeeds sector region")
+      .populate("partnerId", "fullname companyName")
+      .populate("studentId", "fullname email")  // موجود لو أضفتيه قبل
+      .sort({ createdAt: -1 });
 
-    res.json(requests || []);
+    res.json(requests);
   } catch (err) {
-    console.error("خطأ كبير في /expert/pending:", {
-      message: err.message,
-      stack: err.stack,
-      expertId: req.query.expertId
-    });
-    res.status(500).json({ 
-      msg: "خطأ داخلي في السيرفر", 
-      error: err.message 
-    });
+    console.error("خطأ في جلب الطلبات الواردة للخبير:", err);
+    res.status(500).json({ msg: "خطأ في السيرفر" });
   }
 });
+
 // جلب المعاينات المكتملة للخبير
 router.get("/expert/completed", async (req, res) => {
   try {
@@ -142,7 +114,7 @@ router.get("/expert/completed", async (req, res) => {
   }
 });
 
-// تحديث التقرير والقرار (مع populate كامل في الرد)
+// تحديث التقرير والقرار
 router.patch("/:id", async (req, res) => {
   try {
     const { report, status } = req.body;
