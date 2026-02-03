@@ -28,7 +28,7 @@ router.post("/", async (req, res) => {
 
     await newReview.save();
 
-    // نرجع البيانات مملوءة
+    // نرجع البيانات مملوءة (بدون studentId)
     const populatedReview = await Review.findById(newReview._id)
       .populate("projectId", "name description fundingNeeds sector region")
       .populate("expertId", "fullname")
@@ -65,7 +65,7 @@ router.get("/partner", async (req, res) => {
   }
 });
 
-// جلب الطلبات الواردة للخبير (pending) – النسخة الأصلية بدون تعديلات إضافية
+// جلب الطلبات الواردة للخبير (pending) – بدون أي ذكر للطالب
 router.get("/expert/pending", async (req, res) => {
   try {
     const expertId = req.query.expertId;
@@ -80,7 +80,6 @@ router.get("/expert/pending", async (req, res) => {
     })
       .populate("projectId", "name description fundingNeeds sector region")
       .populate("partnerId", "fullname companyName")
-      .populate("studentId", "fullname email")  // موجود لو أضفتيه قبل
       .sort({ createdAt: -1 });
 
     res.json(requests);
