@@ -5,10 +5,10 @@ import multer from "multer";
 
 const router = express.Router();
 
-// multer setup (نفس اللي عندك، لكن زدنا error handling)
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/"); // تأكدي المجلد موجود
+    cb(null, "uploads/"); 
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1E9);
@@ -28,7 +28,7 @@ const upload = multer({
   },
 });
 
-// رفع CV (مع log أكثر)
+
 router.post("/upload-cv/:id", upload.single("cv"), async (req, res) => {
   console.log("=== بداية رفع CV ===");
   console.log("ID:", req.params.id);
@@ -58,7 +58,7 @@ router.post("/upload-cv/:id", upload.single("cv"), async (req, res) => {
   }
 });
 
-// تحديث الوصف
+
 router.patch("/:id", async (req, res) => {
   try {
     const { profileDescription } = req.body;
@@ -79,7 +79,7 @@ router.patch("/:id", async (req, res) => {
   }
 });
 
-// جلب الطلاب
+
 router.get("/students", async (req, res) => {
   try {
     const students = await User.find({ role: "student" })
@@ -101,7 +101,7 @@ router.get("/students", async (req, res) => {
   }
 });
 
-// جلب الخبراء
+
 router.get("/experts", async (req, res) => {
   try {
     const experts = await User.find({ role: "expert" })
@@ -110,6 +110,24 @@ router.get("/experts", async (req, res) => {
     res.json(experts);
   } catch (err) {
     console.error("خطأ جلب الخبراء:", err);
+    res.status(500).json({ msg: "خطأ في السيرفر" });
+  }
+});
+
+
+router.get("/:id", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).select(
+      "fullname email role expertise experienceYears preferredSectors companyName specialty"
+    );
+
+    if (!user) {
+      return res.status(404).json({ msg: "المستخدم غير موجود" });
+    }
+
+    res.json(user);
+  } catch (err) {
+    console.error("خطأ في جلب المستخدم:", err);
     res.status(500).json({ msg: "خطأ في السيرفر" });
   }
 });

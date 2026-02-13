@@ -3,7 +3,7 @@ import Project from "../models/Project.js";
 
 const router = express.Router();
 
-// GET all projects (للشركاء - مهم جدًا!)
+
 router.get("/", async (req, res) => {
   try {
     const projects = await Project.find()
@@ -15,7 +15,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// GET projects for specific student (للطالب)
+
 router.get("/student/:id", async (req, res) => {
   try {
     const projects = await Project.find({ owner: req.params.id })
@@ -57,7 +57,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-// DELETE project (only owner)
+
 router.delete("/:id", async (req, res) => {
   const userId = req.query.userId;
 
@@ -78,11 +78,11 @@ router.delete("/:id", async (req, res) => {
     res.status(500).json({ msg: "خطأ في السيرفر" });
   }
 });
-// routes/projects.js - جلب مشروع واحد بالـ id
+
 router.get("/:id", async (req, res) => {
   try {
     const project = await Project.findById(req.params.id)
-      .populate("owner", "fullname _id"); // ← مهم: نجيب fullname و _id تاع الطالب
+      .populate("owner", "fullname _id"); 
 
     if (!project) {
       return res.status(404).json({ msg: "المشروع غير موجود" });

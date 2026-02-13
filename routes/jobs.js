@@ -1,10 +1,10 @@
-// routes/jobs.js
+
 import express from "express";
 import Job from "../models/Job.js";
 
 const router = express.Router();
 
-// جلب جميع الوظائف
+
 router.get("/", async (req, res) => {
   try {
     const jobs = await Job.find().populate("createdBy", "fullname email role");
@@ -15,11 +15,11 @@ router.get("/", async (req, res) => {
   }
 });
 
-// إضافة وظيفة جديدة
+
 router.post("/", async (req, res) => {
   const { title, company, location, description, type, createdBy } = req.body;
 
-  // تحقق من الحقول المطلوبة
+ 
   if (!title || !company || !location || !createdBy) {
     return res.status(400).json({ msg: "يرجى ملء الحقول المطلوبة" });
   }
@@ -30,7 +30,7 @@ router.post("/", async (req, res) => {
       company,
       location,
       description: description || "",
-      type: type || "job",  // ← خلي type يتخزن (افتراضي "job")
+      type: type || "job",  
       createdBy,
     });
 

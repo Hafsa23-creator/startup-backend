@@ -1,8 +1,8 @@
-// models/Project.js
+
 import mongoose from "mongoose";
 
 const projectSchema = new mongoose.Schema({
-  owner: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // صاحب المشروع
+  owner: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, 
   name: { type: String, required: true },
   sector: { type: String, required: true },
   region: { type: String, required: true },

@@ -3,7 +3,7 @@ import Partnership from "../models/Partnership.js";
 
 const router = express.Router();
 
-// جلب الطلبات المرسلة من الشريك (واحد برك، حذفنا التكرار)
+
 router.get("/sent/:id", async (req, res) => {
   try {
     const sent = await Partnership.find({ partnerId: req.params.id })
@@ -17,7 +17,7 @@ router.get("/sent/:id", async (req, res) => {
   }
 });
 
-// إنشاء طلب شراكة جديد (من الشريك)
+
 router.post("/", async (req, res) => {
   const { projectId, partnerId, studentId, message } = req.body;
 
@@ -48,7 +48,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-// جلب طلبات الاهتمام الواردة للطالب
+
 router.get("/student/:id", async (req, res) => {
   try {
     const partnerships = await Partnership.find({ studentId: req.params.id })
@@ -63,7 +63,7 @@ router.get("/student/:id", async (req, res) => {
   }
 });
 
-// تحديث حالة الطلب (قبول أو رفض من الطالب)
+
 router.patch("/:id", async (req, res) => {
   const { status } = req.body;
 

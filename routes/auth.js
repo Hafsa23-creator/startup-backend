@@ -1,7 +1,7 @@
 import express from "express";
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken"; // ← زدنا jsonwebtoken
+import jwt from "jsonwebtoken"; 
 
 const router = express.Router();
 
@@ -65,10 +65,10 @@ router.post("/register", async (req, res) => {
     const user = new User(userData);
     await user.save();
 
-    // إنشاء JWT token بعد التسجيل
+    
     const token = jwt.sign(
       { id: user._id, role: user.role },
-      process.env.JWT_SECRET || "your-secret-key", // زدي JWT_SECRET في .env أو Render Env
+      process.env.JWT_SECRET || "your-secret-key", 
       { expiresIn: "7d" }
     );
 
@@ -97,12 +97,12 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ msg: "الإيميل غير موجود" });
     }
 
-    // مقارنة عادية بدون bcrypt
+    
     if (user.password !== password) {
       return res.status(400).json({ msg: "كلمة المرور خاطئة" });
     }
 
-    // إنشاء JWT token (خليه زي ما هو)
+    
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET || "your-secret-key",

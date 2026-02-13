@@ -1,10 +1,10 @@
 import express from "express";
 import Application from "../models/Application.js";
-import Job from "../models/Job.js"; // ← السطر اللي كان ناقص!! أضفيه هنا
+import Job from "../models/Job.js"; 
 
 const router = express.Router();
 
-// جلب طلبات الطالب
+
 router.get("/student/:id", async (req, res) => {
   try {
     const apps = await Application.find({ studentId: req.params.id })
@@ -17,7 +17,7 @@ router.get("/student/:id", async (req, res) => {
   }
 });
 
-// جلب طلبات الشريك
+
 router.get("/partner/:id", async (req, res) => {
   try {
     const apps = await Application.find({ partnerId: req.params.id })
@@ -32,7 +32,7 @@ router.get("/partner/:id", async (req, res) => {
   }
 });
 
-// إنشاء طلب جديد
+
 router.post("/", async (req, res) => {
   const { jobId, studentId, message } = req.body;
 
@@ -51,7 +51,7 @@ router.post("/", async (req, res) => {
       studentId,
       message,
       status: "pending",
-      partnerId: job.createdBy, // أو job.owner إذا الحقل اسمه owner
+      partnerId: job.createdBy, 
     });
 
     await newApp.save();
@@ -68,7 +68,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-// تحديث حالة الطلب
+
 router.patch("/:id", async (req, res) => {
   const { status } = req.body;
 

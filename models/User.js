@@ -1,4 +1,4 @@
-// models/User.js
+
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   role: { type: String, enum: ["student", "partner", "expert"], default: "student" },
 
-  // بيانات الطلاب
+  
   projectName: { type: String, default: "" },
   projectType: { type: String, default: "" },
   projectDescription: { type: String, default: "" },
@@ -15,18 +15,18 @@ const userSchema = new mongoose.Schema({
   university: { type: String, default: "" },
   region: { type: String, default: "" },
   specialty: { type: String, default: "" },
-  cvUrl: { type: String, default: "" }, // رابط الـ CV
-  profileDescription: { type: String, default: "" }, // وصف احترافي
+  cvUrl: { type: String, default: "" }, 
+  profileDescription: { type: String, default: "" }, 
 
-  // بيانات الشركاء
+  
   companyName: { type: String, default: "" },
   interestedSectors: { type: [String], default: [] },
   interestedRegions: { type: [String], default: [] },
 
-  // بيانات الخبير الاقتصادي (جديد)
-  expertise: { type: String, default: "" }, // مجال الخبرة
-  experienceYears: { type: String, default: "" }, // عدد سنوات الخبرة
-  preferredSectors: { type: [String], default: [] }, // القطاعات المفضلة
+  
+  expertise: { type: String, default: "" }, 
+  experienceYears: { type: String, default: "" }, 
+  preferredSectors: { type: [String], default: [] }, 
 }, { timestamps: true });
 
 export default mongoose.model("User", userSchema);

@@ -1,11 +1,11 @@
-// routes/reviews.js
+
 import express from "express";
 import Review from "../models/Review.js";
 import mongoose from "mongoose";
 
 const router = express.Router();
 
-// الشريك يرسل طلب معاينة
+
 router.post("/", async (req, res) => {
   try {
     const { projectId, expertId, partnerId } = req.body;
@@ -28,7 +28,7 @@ router.post("/", async (req, res) => {
 
     await newReview.save();
 
-    // نرجع البيانات مملوءة (بدون studentId)
+    
     const populatedReview = await Review.findById(newReview._id)
       .populate("projectId", "name description fundingNeeds sector region")
       .populate("expertId", "fullname")
@@ -41,7 +41,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-// جلب التقارير المكتملة للشريك
+
 router.get("/partner", async (req, res) => {
   try {
     const partnerId = req.query.partnerId;
@@ -65,7 +65,7 @@ router.get("/partner", async (req, res) => {
   }
 });
 
-// جلب الطلبات الواردة للخبير (pending) – بدون أي ذكر للطالب
+
 router.get("/expert/pending", async (req, res) => {
   try {
     const expertId = req.query.expertId;
@@ -89,7 +89,7 @@ router.get("/expert/pending", async (req, res) => {
   }
 });
 
-// جلب المعاينات المكتملة للخبير
+
 router.get("/expert/completed", async (req, res) => {
   try {
     const expertId = req.query.expertId;
@@ -113,7 +113,7 @@ router.get("/expert/completed", async (req, res) => {
   }
 });
 
-// تحديث التقرير والقرار
+
 router.patch("/:id", async (req, res) => {
   try {
     const { report, status } = req.body;
