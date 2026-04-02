@@ -2,6 +2,9 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 
+import dns from "node:dns/promises";
+dns.setServers(["1.1.1.1", "8.8.8.8"]);  
+
 import authRoutes from "./routes/auth.js";
 import projectRoutes from "./routes/projects.js";
 import jobRoutes from "./routes/jobs.js";
@@ -9,12 +12,12 @@ import applicationRoutes from "./routes/applications.js";
 import userRoutes from "./routes/users.js";
 import partnershipRoutes from "./routes/partnerships.js";
 import reviewRoutes from "./routes/reviews.js";
-
-dotenv.config();
+import statsRoutes from "./routes/stats.js";
+import ratingRoutes from "./routes/ratings.js";
 
 const app = express();
 
-
+// CORS
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
@@ -25,24 +28,20 @@ app.use((req, res, next) => {
     res.sendStatus(204);
     return;
   }
-
   next();
 });
 
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
-
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB Atlas connected ✅"))
+  .then(() => console.log("✅ MongoDB Atlas connected successfully"))
   .catch(err => {
-    console.error("MongoDB connection error:", err.message);
-    
+    console.error("❌ MongoDB connection error:", err.message);
+    console.error("Full error:", err);  
   });
 
-
 app.get("/healthz", (req, res) => res.status(200).send("OK"));
-
 
 app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
@@ -51,6 +50,8 @@ app.use("/api/applications", applicationRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/partnerships", partnershipRoutes);
 app.use("/api/reviews", reviewRoutes);
+app.use("/api/stats", statsRoutes);
+app.use("/api/ratings", ratingRoutes);
 
 
 export default app;
