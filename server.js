@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 
 import dns from "node:dns/promises";
-dns.setServers(["1.1.1.1", "8.8.8.8"]);  
+dns.setServers(["1.1.1.1", "8.8.8.8"]);
 
 import authRoutes from "./routes/auth.js";
 import projectRoutes from "./routes/projects.js";
@@ -15,6 +15,7 @@ import reviewRoutes from "./routes/reviews.js";
 import statsRoutes from "./routes/stats.js";
 import ratingRoutes from "./routes/ratings.js";
 
+dotenv.config();
 const app = express();
 
 // CORS
@@ -34,15 +35,17 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
+//  MongoDB
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB Atlas connected successfully"))
   .catch(err => {
     console.error("❌ MongoDB connection error:", err.message);
-    console.error("Full error:", err);  
+    console.error("Full error:", err);
   });
 
 app.get("/healthz", (req, res) => res.status(200).send("OK"));
 
+// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/jobs", jobRoutes);
@@ -53,5 +56,5 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/stats", statsRoutes);
 app.use("/api/ratings", ratingRoutes);
 
-
-export default app;
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
