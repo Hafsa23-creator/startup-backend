@@ -21,7 +21,10 @@ const app = express();
 
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
+  res.header(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+  );
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
   if (req.method === "OPTIONS") {
@@ -39,10 +42,7 @@ let isConnected = false;
 const connectDB = async () => {
   if (isConnected) return;
 
-  const db = await mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
+  const db = await mongoose.connect(process.env.MONGO_URI);
 
   isConnected = db.connections[0].readyState;
 };
