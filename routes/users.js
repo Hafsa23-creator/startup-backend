@@ -4,7 +4,12 @@ import Project from "../models/Project.js";
 import multer from "multer";
 
 const router = express.Router();
-
+ 
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -17,7 +22,7 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({
-  storage,
+  storage: multer.memoryStorage(),
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
   fileFilter: (req, file, cb) => {
     if (file.mimetype === "application/pdf") {
@@ -27,7 +32,6 @@ const upload = multer({
     }
   },
 });
-
 
 router.post("/upload-cv/:id", upload.single("cv"), async (req, res) => {
   console.log("=== بداية رفع CV ===");
