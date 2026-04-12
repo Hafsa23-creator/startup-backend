@@ -19,13 +19,13 @@ dns.setServers(["1.1.1.1", "8.8.8.8"]);
 
 const app = express();
 
-// ====================== CORS Middleware محسن لـ Vercel ======================
+
 app.use((req, res, next) => {
-  // السماح لـ localhost أثناء التطوير + Netlify عند النشر
+  
   const allowedOrigins = [
     "http://localhost:3000",
     "http://localhost:3001",
-    "https://startup-dz.netlify.app",           // غيريه برابط Netlify الحقيقي تاعك
+    "https://startup-dz.netlify.app",          
     "https://prismatic-beignet-541326.netlify.app"
   ];
 
@@ -34,14 +34,14 @@ app.use((req, res, next) => {
   if (allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
   } else {
-    res.setHeader("Access-Control-Allow-Origin", "*"); // مؤقت للتجربة
+    res.setHeader("Access-Control-Allow-Origin", "*"); 
   }
 
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, X-CSRF-Token");
   res.setHeader("Access-Control-Allow-Credentials", "true");
 
-  // الرد على طلبات preflight (OPTIONS) - مهم جداً
+  
   if (req.method === "OPTIONS") {
     return res.status(204).end();
   }
@@ -49,11 +49,11 @@ app.use((req, res, next) => {
   next();
 });
 
-// ====================== باقي الإعدادات ======================
+
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
-// MongoDB Connection (محسن)
+
 let isConnected = false;
 
 const connectDB = async () => {
@@ -68,7 +68,7 @@ const connectDB = async () => {
   }
 };
 
-// Connect to DB before routes
+
 app.use(async (req, res, next) => {
   await connectDB();
   next();
