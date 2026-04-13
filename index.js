@@ -32,7 +32,14 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());
-
+// Root route - مهم جداً للاختبار
+app.get("/", (req, res) => {
+  res.json({ 
+    message: "Backend is working",
+    status: "OK",
+    time: new Date().toISOString()
+  });
+});
 // ====================== MongoDB ======================
 let isConnected = false;
 
