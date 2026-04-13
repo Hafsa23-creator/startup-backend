@@ -32,12 +32,12 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());
-// Root route - مهم جداً للاختبار
-app.get("/", (req, res) => {
-  res.json({ 
-    message: "Backend is working",
-    status: "OK",
-    time: new Date().toISOString()
+// Route مؤقت للاختبار - مهم
+app.all("/api/*", (req, res) => {
+  res.status(200).json({
+    msg: "API route reached",
+    path: req.path,
+    method: req.method
   });
 });
 // ====================== MongoDB ======================
