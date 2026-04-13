@@ -2,7 +2,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-
+import cors from "cors";
 import authRoutes from "./routes/auth.js";
 import projectRoutes from "./routes/projects.js";
 import jobRoutes from "./routes/jobs.js";
@@ -26,7 +26,7 @@ app.use((req, res, next) => {
     "http://localhost:3000",
     "http://localhost:3001",
     "https://startup-dz.netlify.app",
-    "https://prismatic-beignet-541326.netlify.app"
+    "https://ornate-faloodeh-cebd5a.netlify.app"
   ];
 
   const origin = req.headers.origin;
