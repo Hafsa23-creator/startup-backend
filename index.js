@@ -1,4 +1,4 @@
-// api/index.js - نسخة عامة ونظيفة
+// api/index.js - نسخة نظيفة ومستقرة
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
@@ -17,9 +17,9 @@ dotenv.config();
 
 const app = express();
 
-// ====================== CORS عام (مؤقت) ======================
+// CORS عام (مؤقت)
 app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");           // عام للكل
+  res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
   res.setHeader("Access-Control-Allow-Credentials", "true");
@@ -27,20 +27,12 @@ app.use((req, res, next) => {
   if (req.method === "OPTIONS") {
     return res.status(204).end();
   }
-
   next();
 });
 
 app.use(express.json());
-// Route مؤقت للاختبار - مهم
-app.all("/api/*", (req, res) => {
-  res.status(200).json({
-    msg: "API route reached",
-    path: req.path,
-    method: req.method
-  });
-});
-// ====================== MongoDB ======================
+
+// MongoDB Connection
 let isConnected = false;
 
 const connectDB = async () => {
@@ -60,11 +52,12 @@ app.use(async (req, res, next) => {
   next();
 });
 
-// ====================== Routes ======================
+// Health Check
 app.get("/healthz", (req, res) => {
   res.status(200).json({ status: "OK", message: "Backend is running" });
 });
 
+// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/jobs", jobRoutes);
@@ -75,9 +68,9 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/stats", statsRoutes);
 app.use("/api/ratings", ratingRoutes);
 
-// 404
+// 404 Handler
 app.use((req, res) => {
-  res.status(404).json({ msg: "Route not found" });
+  res.status(404).json({ msg: "Route not found", path: req.path });
 });
 
 // Global Error Handler
