@@ -105,7 +105,10 @@ router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    
+    if (!email || !password) {
+      return res.status(400).json({ msg: "الإيميل وكلمة المرور مطلوبين" });
+    }
+
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ msg: "الإيميل غير موجود" });
@@ -123,6 +126,7 @@ router.post("/login", async (req, res) => {
     );
 
     res.json({
+      success: true,
       token,
       user: {
         id: user._id,
@@ -134,6 +138,7 @@ router.post("/login", async (req, res) => {
         preferredSectors: user.preferredSectors || [],
       },
     });
+
   } catch (err) {
     console.error("خطأ في الدخول:", err);
     res.status(500).json({ msg: "خطأ في السيرفر" });
