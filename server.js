@@ -58,11 +58,12 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/stats", statsRoutes);
 app.use("/api/ratings", ratingRoutes);
 
-// Route اختباري للتأكد من أن /api/auth/login يشتغل
+// Test route للـ login (مؤقت)
 app.post("/api/auth/login", (req, res) => {
-  res.status(200).json({ 
-    msg: "Login route is working (test route)", 
-    receivedData: req.body 
+  res.json({
+    msg: "Login route reached - test successful",
+    method: req.method,
+    body: req.body
   });
 });
 
