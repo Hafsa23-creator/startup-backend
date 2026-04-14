@@ -58,6 +58,14 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/stats", statsRoutes);
 app.use("/api/ratings", ratingRoutes);
 
+// Route اختباري للتأكد من أن /api/auth/login يشتغل
+app.post("/api/auth/login", (req, res) => {
+  res.status(200).json({ 
+    msg: "Login route is working (test route)", 
+    receivedData: req.body 
+  });
+});
+
 // 404 Handler
 app.use((req, res) => {
   res.status(404).json({ msg: "Route not found" });
