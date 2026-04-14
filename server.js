@@ -48,17 +48,6 @@ mongoose.connect(process.env.MONGO_URI)
 app.get("/healthz", (req, res) => res.status(200).send("OK"));
 
 // ====================== Routes ======================
-
-// Test route مباشر للـ login (للتشخيص)
-app.post("/api/auth/login", (req, res) => {
-  res.json({
-    msg: "✅ Login route reached successfully",
-    method: req.method,
-    body: req.body
-  });
-});
-
-// باقي الـ routes
 app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/jobs", jobRoutes);
