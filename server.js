@@ -20,19 +20,19 @@ dotenv.config();
 
 const app = express();
 
-// CORS - خاص بـ Vercel
-app.use(cors({
-  origin: [
-    "http://localhost:3000",
-    "http://localhost:5173",
-    "https://startup-dz.vercel.app", // زيد domain الـ frontend تاعك
-  ],
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
-}));
+// CORS - عام ومستقر
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, Origin, X-Requested-With, Accept");
+  res.header("Access-Control-Allow-Credentials", "true");
 
-
+  if (req.method === "OPTIONS") {
+    res.sendStatus(204);
+    return;
+  }
+  next();
+});
 
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
@@ -48,6 +48,7 @@ mongoose.connect(process.env.MONGO_URI)
 app.get("/healthz", (req, res) => res.status(200).send("OK"));
 
 // ====================== Routes ======================
+
 app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/jobs", jobRoutes);
