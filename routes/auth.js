@@ -101,44 +101,42 @@ router.post("/register", async (req, res) => {
 });
 
 
-app.post('/login', async (req, res) => {
+router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
+
     
-    // 1. ابحث على المستخدم في قاعدة البيانات
     const user = await User.findOne({ email });
-    
     if (!user) {
-      return res.status(404).json({ msg: 'المستخدم غير موجود' });
+      return res.status(400).json({ msg: "الإيميل غير موجود" });
     }
-    
-    // 2. تحقق من كلمة المرور
+
     const isMatch = await bcrypt.compare(password, user.password);
-    
     if (!isMatch) {
-      return res.status(400).json({ msg: 'كلمة المرور خاطئة' });
+      return res.status(400).json({ msg: "كلمة المرور خاطئة" });
     }
-    
-    // 3. أنشئ token
+
     const token = jwt.sign(
-      { userId: user._id }, 
-      process.env.JWT_SECRET,
-      { expiresIn: '7d' }
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET || "your-secret-key",
+      { expiresIn: "7d" }
     );
-    
-    // 4. أرجع بيانات المستخدم
+
     res.json({
+      token,
       user: {
         id: user._id,
-        name: user.name,
-        email: user.email
+        fullname: user.fullname,
+        email: user.email,
+        role: user.role,
+        expertise: user.expertise || "",
+        experienceYears: user.experienceYears || "",
+        preferredSectors: user.preferredSectors || [],
       },
-      token
     });
-    
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ msg: 'خطأ في السيرفر' });
+  } catch (err) {
+    console.error("خطأ في الدخول:", err);
+    res.status(500).json({ msg: "خطأ في السيرفر" });
   }
 });
 
