@@ -47,8 +47,7 @@ mongoose.connect(process.env.MONGO_URI)
 // Health Check
 app.get("/healthz", (req, res) => res.status(200).send("OK"));
 
-// Routes
-app.use("/api/auth", authRoutes);
+// Routes - نضعها مباشرة لتجنب مشاكل الـ mounting
 app.use("/api/projects", projectRoutes);
 app.use("/api/jobs", jobRoutes);
 app.use("/api/applications", applicationRoutes);
@@ -58,7 +57,7 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/stats", statsRoutes);
 app.use("/api/ratings", ratingRoutes);
 
-// Test route للـ login (مؤقت)
+// Test route مباشر للـ login
 app.post("/api/auth/login", (req, res) => {
   res.json({
     msg: "Login route reached - test successful",
@@ -67,6 +66,8 @@ app.post("/api/auth/login", (req, res) => {
   });
 });
 
+// الـ authRoutes الكاملة (مؤقتاً)
+app.use("/api/auth", authRoutes);
 // 404 Handler
 app.use((req, res) => {
   res.status(404).json({ msg: "Route not found" });
