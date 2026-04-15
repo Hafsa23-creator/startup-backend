@@ -98,7 +98,7 @@ router.patch("/:id", async (req, res) => {
 router.get("/students", async (req, res) => {
   try {
     const students = await User.find({ role: "student" })
-      .select("fullname email region specialty university cvUrl profileDescription phone")   // ← أضيفي phone هنا
+      .select("fullname email region specialty university cvUrl profileDescription phone")   
       .sort({ createdAt: -1 })
       .lean();
 
