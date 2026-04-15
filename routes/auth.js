@@ -13,6 +13,7 @@ router.post("/register", async (req, res) => {
       email,
       password,
       role,
+      phone,
       projectName,
       projectType,
       projectDescription,
@@ -45,6 +46,7 @@ router.post("/register", async (req, res) => {
       email,
       password: hashed, 
       role: role || "student",
+      phone: phone || "",
     };
 
     if (role === "student") {
@@ -87,6 +89,7 @@ router.post("/register", async (req, res) => {
         id: user._id,
         fullname: user.fullname,
         email: user.email,
+        phone: user.phone,
         role: user.role,
         expertise: user.expertise || "",
         experienceYears: user.experienceYears || "",
