@@ -98,7 +98,7 @@ router.patch("/:id", async (req, res) => {
 router.get("/students", async (req, res) => {
   try {
     const students = await User.find({ role: "student" })
-      .select("fullname email region specialty university cvUrl profileDescription")
+      .select("fullname email region specialty university cvUrl profileDescription phone")   // ← أضيفي phone هنا
       .sort({ createdAt: -1 })
       .lean();
 
@@ -115,7 +115,6 @@ router.get("/students", async (req, res) => {
     res.status(500).json({ msg: "خطأ في السيرفر" });
   }
 });
-
 
 router.get("/experts", async (req, res) => {
   try {
