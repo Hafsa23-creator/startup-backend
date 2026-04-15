@@ -2,22 +2,20 @@ import express from "express";
 import User from "../models/User.js";
 import Project from "../models/Project.js";
 import multer from "multer";
-
+import { v2 as cloudinary } from "cloudinary";
+import streamifier from "streamifier";
 const router = express.Router();
 
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/"); 
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1E9);
-    cb(null, "cv-" + uniqueSuffix + ".pdf");
-  },
+// إعداد Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+
 const upload = multer({
-  storage,
+  storage: multer.memoryStorage(),
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
   fileFilter: (req, file, cb) => {
     if (file.mimetype === "application/pdf") {
@@ -28,19 +26,32 @@ const upload = multer({
   },
 });
 
+const uploadToCloudinary = (buffer) => {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: "startdz_cvs",
+        resource_type: "raw",
+        public_id: `cv-${Date.now()}`,
+      },
+      (error, result) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+    streamifier.createReadStream(buffer).pipe(uploadStream);
+  });
+};
 
 router.post("/upload-cv/:id", upload.single("cv"), async (req, res) => {
-  console.log("=== بداية رفع CV ===");
-  console.log("ID:", req.params.id);
-  console.log("File:", req.file);
-  console.log("Body:", req.body);
-
   try {
     if (!req.file) {
       return res.status(400).json({ msg: "لا ملف مرفوع أو غير PDF" });
     }
 
-    const cvUrl = `/uploads/${req.file.filename}`;
+    const result = await uploadToCloudinary(req.file.buffer);
+    const cvUrl = result.secure_url;
+
     const updated = await User.findByIdAndUpdate(
       req.params.id,
       { cvUrl },
@@ -51,10 +62,14 @@ router.post("/upload-cv/:id", upload.single("cv"), async (req, res) => {
       return res.status(404).json({ msg: "المستخدم غير موجود" });
     }
 
-    res.json({ msg: "تم رفع السيرة الذاتية بنجاح!", cvUrl });
+    res.json({ 
+      msg: "تم رفع السيرة الذاتية بنجاح!", 
+      cvUrl 
+    });
+
   } catch (err) {
     console.error("خطأ رفع CV:", err);
-    res.status(500).json({ msg: "خطأ في السيرفر" });
+    res.status(500).json({ msg: "خطأ في رفع الملف" });
   }
 });
 
