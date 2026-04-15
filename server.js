@@ -14,7 +14,7 @@ import partnershipRoutes from "./routes/partnerships.js";
 import reviewRoutes from "./routes/reviews.js";
 import statsRoutes from "./routes/stats.js";
 import ratingRoutes from "./routes/ratings.js";
-
+import { v2 as cloudinary } from "cloudinary";
 dotenv.config();
 const app = express();
 
@@ -34,6 +34,12 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
+
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET,
+});
 
 //  MongoDB
 mongoose.connect(process.env.MONGO_URI)
