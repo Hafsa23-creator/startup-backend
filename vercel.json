@@ -8,15 +8,14 @@
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/server.js",
-      "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-      "headers": {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Date, X-Api-Version",
-        "Access-Control-Allow-Credentials": "true"
-      }
+      "src": "/(.*)",
+      "dest": "/server.js"
     }
-  ]
+  ],
+  "env": {
+    "MONGO_URI": "@mongo-uri",
+    "CLOUD_NAME": "@cloud-name",
+    "API_KEY": "@api-key",
+    "API_SECRET": "@api-secret"
+  }
 }
