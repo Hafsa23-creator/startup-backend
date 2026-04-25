@@ -18,6 +18,13 @@ import { v2 as cloudinary } from "cloudinary";
 dotenv.config();
 const app = express();
 
+app.use(cors({
+  origin: "*",                   
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true
+}));
+
 // CORS
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
@@ -61,12 +68,7 @@ app.use("/api/partnerships", partnershipRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/stats", statsRoutes);
 app.use("/api/ratings", ratingRoutes);
-app.use(cors({
-  origin: "*",                   
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true
-}));
+
 
 
 export default app;
