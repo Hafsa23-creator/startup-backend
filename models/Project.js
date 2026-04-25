@@ -1,4 +1,3 @@
-
 import mongoose from "mongoose";
 
 const projectSchema = new mongoose.Schema({
@@ -8,10 +7,6 @@ const projectSchema = new mongoose.Schema({
   region: { type: String, required: true },
   description: { type: String, default: "" },
   fundingNeeds: { type: String, default: "" },
-  videoUrl: { 
-    type: String, 
-    default: "" 
-  },
   partnersContacted: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   status: { type: String, enum: ["published", "draft"], default: "published" }
 }, { timestamps: true });

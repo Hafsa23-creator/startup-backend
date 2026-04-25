@@ -62,7 +62,7 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/stats", statsRoutes);
 app.use("/api/ratings", ratingRoutes);
 app.use(cors({
-  origin: "*",                    // مؤقتاً
+  origin: "*",                   
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
