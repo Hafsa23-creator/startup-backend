@@ -57,7 +57,13 @@ mongoose.connect(process.env.MONGO_URI)
   });
 
 app.get("/healthz", (req, res) => res.status(200).send("OK"));
-
+  app.post("/api/auth/login", (req, res) => {
+  res.json({
+    msg: "✅ Login route reached successfully",
+    method: req.method,
+    body: req.body
+  });
+});
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
@@ -69,6 +75,8 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/stats", statsRoutes);
 app.use("/api/ratings", ratingRoutes);
 
+app.use(express.json({ limit: "200mb" }));
+app.use(express.urlencoded({ limit: "200mb", extended: true }));
 
 
 export default app;
