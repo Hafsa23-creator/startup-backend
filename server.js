@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import dns from "node:dns/promises";
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
-
+import app from "../server.js";
 import authRoutes from "./routes/auth.js";
 import projectRoutes from "./routes/projects.js";
 import jobRoutes from "./routes/jobs.js";
